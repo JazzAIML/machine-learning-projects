@@ -1,50 +1,58 @@
-import os
 import streamlit as st
+import pickle
+import os
 import numpy as np
-import joblib
 
-# Set the base directory dynamically (where app.py is located)
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+# Define the paths to model and scaler
+MODEL_PATH = os.path.join(os.path.dirname(__file__), "..", "models", "model.pkl")
+SCALER_PATH = os.path.join(os.path.dirname(__file__), "..", "models", "scaler.pkl")
 
-# Define the models directory
-MODELS_DIR = os.path.join(BASE_DIR, "models")
+# Load the pretrained model
+@st.cache_resource  # Caches the model to improve performance
+def load_model():
+    try:
+        with open(MODEL_PATH, "rb") as model_file:
+            model = pickle.load(model_file)
+        return model
+    except FileNotFoundError:
+        st.error(f"Model file not found at {MODEL_PATH}. Ensure it's in the correct location.")
+        return None
 
-# Define model and scaler file paths
-model_path = os.path.join(MODELS_DIR, "healthcare_model.pkl")
-scaler_path = os.path.join(MODELS_DIR, "scaler.pkl")
+# Load the scaler (if applicable)
+@st.cache_resource
+def load_scaler():
+    try:
+        with open(SCALER_PATH, "rb") as scaler_file:
+            scaler = pickle.load(scaler_file)
+        return scaler
+    except FileNotFoundError:
+        st.warning(f"Scaler file not found at {SCALER_PATH}. Proceeding without scaling.")
+        return None
 
-# Check if model and scaler files exist
-if not os.path.exists(model_path) or not os.path.exists(scaler_path):
-    st.error("⚠ Model or Scaler file not found! Please check your repository.")
-else:
-    # Load trained model and scaler
-    model = joblib.load(model_path)
-    scaler = joblib.load(scaler_path)
-    
-    st.success("✅ Model and Scaler Loaded Successfully!")
+# Load model and scaler
+model = load_model()
+scaler = load_scaler()
 
 # Streamlit UI
-st.title("🩺 AI Healthcare Risk Assessment")
-st.write("Enter your health details to predict your risk level.")
+st.title("Healthcare Risk Assessment")
 
-# User inputs
-pregnancies = st.number_input("Pregnancies", 0, 20, 1)
-glucose = st.slider("Glucose Level", 50, 200, 100)
-blood_pressure = st.slider("Blood Pressure", 60, 180, 120)
-skin_thickness = st.slider("Skin Thickness", 0, 100, 20)
-insulin = st.slider("Insulin Level", 0, 900, 80)
-bmi = st.slider("BMI", 10.0, 50.0, 25.0)
-pedigree = st.slider("Diabetes Pedigree Function", 0.0, 2.5, 0.5)
-age = st.slider("Age", 18, 100, 30)
+# Input form
+age = st.number_input("Enter Age", min_value=0, max_value=120, value=30)
+bmi = st.number_input("Enter BMI", min_value=10.0, max_value=50.0, value=22.5)
+blood_pressure = st.number_input("Enter Blood Pressure", min_value=50, max_value=200, value=120)
 
-# Predict button
 if st.button("Predict Risk"):
-    user_input = np.array([[pregnancies, glucose, blood_pressure, skin_thickness, 
-                            insulin, bmi, pedigree, age]])
-    user_input_scaled = scaler.transform(user_input)
-    prediction = model.predict(user_input_scaled)
+    if model:
+        # Prepare input data
+        input_data = np.array([[age, bmi, blood_pressure]])
 
-    if prediction[0] == 1:
-        st.error("⚠ High Risk Detected! Consult a Doctor.")
+        # Apply scaler if available
+        if scaler:
+            input_data = scaler.transform(input_data)
+
+        # Make prediction
+        prediction = model.predict(input_data)[0]
+        st.success(f"Predicted Risk Score: {prediction:.2f}")
     else:
-        st.success("✅ Low Risk - Stay Healthy!")
+        st.error("Model not loaded. Please check the file paths.")
+
