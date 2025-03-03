@@ -1,0 +1,19 @@
+AI-ML-Portfolio/
+│── projects/
+│   ├── project_1/
+│   │   ├── data/          # Raw and processed datasets (avoid committing large files)
+│   │   ├── notebooks/     # Jupyter notebooks (*.ipynb)
+│   │   ├── scripts/       # Python scripts (*.py)
+│   │   ├── models/        # Saved model files (*.pkl, *.h5, *.pt, etc.)
+│   │   ├── results/       # Evaluation metrics, reports, plots, etc.
+│   │   ├── README.md      # Description of the project
+│   │   ├── requirements.txt  # Dependencies for this project
+│   │   └── .gitignore     # Ignore unnecessary files (e.g., datasets, models)
+│   ├── project_2/
+│   ├── project_3/
+│── docs/                 # Documentation, tutorials, and reports
+│── envs/                 # Virtual environments (ignored in Git)
+│── .gitignore            # Ignore unnecessary files globally
+│── README.md             # Main repository README
+│── requirements.txt      # Global dependencies (optional)
+│── LICENSE               # License for your work

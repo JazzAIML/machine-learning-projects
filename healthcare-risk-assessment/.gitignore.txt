@@ -1,0 +1,29 @@
+# Ignore local user-specific paths
+C:/Users/*
+/home/*
+
+# Ignore model files if they are private
+*.pkl
+*.log
+
+# Ignore environment files
+.env
+venv/
+__pycache__/
+*.pyc
+*.pyo
+.DS_Store  # macOS system file
+
+# Ignore Jupyter Notebook checkpoints
+.ipynb_checkpoints/
+
+# Ignore Streamlit logs
+.streamlit/
+
+# Ignore model & large dataset files (if needed)
+
+*.csv  # If you don’t want datasets in GitHub
+*.h5   # Ignore large ML models
+
+# Ignore OS-specific files
+Thumbs.db  # Windows thumbnail cache
