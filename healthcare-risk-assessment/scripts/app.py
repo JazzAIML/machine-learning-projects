@@ -4,7 +4,7 @@ import os
 import numpy as np
 
 # Define the paths to model and scaler
-MODEL_PATH = os.path.join(os.path.dirname(__file__), "..", "models", "model.pkl")
+MODEL_PATH = os.path.join(os.path.dirname(__file__), "..", "models", "healthcare_model.pkl")
 SCALER_PATH = os.path.join(os.path.dirname(__file__), "..", "models", "scaler.pkl")
 
 # Load the pretrained model
