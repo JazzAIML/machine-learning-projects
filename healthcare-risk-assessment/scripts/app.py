@@ -3,25 +3,31 @@ import streamlit as st
 import numpy as np
 import joblib
 
-# 🛡 Get the directory of the current script
+# Set the base directory dynamically (where app.py is located)
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
-# 🛡 Load model and scaler using secure relative paths
-MODEL_PATH = os.path.join(BASE_DIR, "healthcare_model.pkl")
-SCALER_PATH = os.path.join(BASE_DIR, "scaler.pkl")
+# Define the models directory
+MODELS_DIR = os.path.join(BASE_DIR, "models")
 
-# 🛡 Check if model files exist before loading
-if not os.path.exists(MODEL_PATH) or not os.path.exists(SCALER_PATH):
-    st.error("🔴 Model or Scaler file not found! Please check your repository.")
+# Define model and scaler file paths
+model_path = os.path.join(MODELS_DIR, "healthcare_model.pkl")
+scaler_path = os.path.join(MODELS_DIR, "scaler.pkl")
+
+# Check if model and scaler files exist
+if not os.path.exists(model_path) or not os.path.exists(scaler_path):
+    st.error("⚠ Model or Scaler file not found! Please check your repository.")
 else:
-    model = joblib.load(MODEL_PATH)
-    scaler = joblib.load(SCALER_PATH)
+    # Load trained model and scaler
+    model = joblib.load(model_path)
+    scaler = joblib.load(scaler_path)
+    
+    st.success("✅ Model and Scaler Loaded Successfully!")
 
-# 🔷 Streamlit UI
+# Streamlit UI
 st.title("🩺 AI Healthcare Risk Assessment")
 st.write("Enter your health details to predict your risk level.")
 
-# 🔷 User inputs
+# User inputs
 pregnancies = st.number_input("Pregnancies", 0, 20, 1)
 glucose = st.slider("Glucose Level", 50, 200, 100)
 blood_pressure = st.slider("Blood Pressure", 60, 180, 120)
@@ -31,11 +37,10 @@ bmi = st.slider("BMI", 10.0, 50.0, 25.0)
 pedigree = st.slider("Diabetes Pedigree Function", 0.0, 2.5, 0.5)
 age = st.slider("Age", 18, 100, 30)
 
-# 🔷 Predict button
+# Predict button
 if st.button("Predict Risk"):
     user_input = np.array([[pregnancies, glucose, blood_pressure, skin_thickness, 
                             insulin, bmi, pedigree, age]])
-
     user_input_scaled = scaler.transform(user_input)
     prediction = model.predict(user_input_scaled)
 
